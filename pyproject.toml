@@ -1,0 +1,11 @@
+[project]
+name = "double-injection"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "deepteam>=1.0.4",
+    "ollama>=0.6.1",
+    "termcolor>=3.2.0",
+]
