@@ -8,7 +8,7 @@ from typing import Tuple, List
 # Add deepteam repo to sys.path
 sys.path.insert(0, os.path.abspath("deepteam_repo"))
 
-from deepteam.attacks.single_turn import Roleplay
+from deepteam.attacks.single_turn import PromptInjection
 from deepteam.vulnerabilities.illegal_activity.illegal_activity import IllegalActivityType
 from deepteam.test_case.test_case import RTTestCase
 from deepteam.metrics.illegal_activity.illegal_activity import IllegalMetric
@@ -35,12 +35,8 @@ class DoubleInjectionAttack:
         # Initialize DeepTeam components
         self.attacker_llm = OllamaDeepEvalWrapper(model_name=attacker_model)
         
-        # Using DeepTeam's Roleplay class for generation
-        self.roleplay_attack = Roleplay(
-            persona="An expert academic researcher in safety and security",
-            role="Safety Researcher",
-            max_retries=3
-        )
+        # Using DeepTeam's PromptInjection class for generation
+        self.prompt_injection_attack = PromptInjection()
         
         # Judge metric to simulate the evaluator we want to fool
         self.judge_metric = IllegalMetric(
@@ -50,7 +46,7 @@ class DoubleInjectionAttack:
 
     async def generate_attack_prompt(self, goal: str, previous_feedback: str = None, iteration: int = 1) -> str:
         """
-        Uses DeepTeam's Roleplay.enhance() to generate the prompt.
+        Uses DeepTeam's PromptInjection.enhance() to generate the prompt.
         We inject the 'Judge Bypass' requirement into the goal fed to the enhancer.
         """
         
@@ -63,12 +59,11 @@ class DoubleInjectionAttack:
         if previous_feedback:
              augmented_goal += f"\n\nRefinement Note: Previous attempt failed. Feedback: {previous_feedback}"
 
-        print(colored(f"[*] Asking DeepTeam Roleplay to generate prompt (Iter {iteration})...", "yellow"))
+        print(colored(f"[*] Asking DeepTeam PromptInjection to generate prompt (Iter {iteration})...", "yellow"))
         
-        # Use deepteam's logic to generate a roleplay prompt wrapper around our augmented goal
-        attack_prompt = await self.roleplay_attack.a_enhance(
-            attack=augmented_goal,
-            simulator_model=self.attacker_llm
+        # Use deepteam's logic to generate a prompt injection wrapper around our augmented goal
+        attack_prompt = await self.prompt_injection_attack.a_enhance(
+            attack=augmented_goal
         )
         
         return attack_prompt
@@ -90,7 +85,7 @@ class DoubleInjectionAttack:
         return is_success, verdict
 
     async def run(self, goal: str):
-        print(colored(f"[*] Starting Double Injection Attack (Enhanced with DeepTeam Roleplay)", "cyan", attrs=['bold']))
+        print(colored(f"[*] Starting Double Injection Attack (Enhanced with DeepTeam PromptInjection)", "cyan", attrs=['bold']))
         print(colored(f"[*] Goal: {goal}", "cyan"))
         print(colored(f"[*] Target: {self.target_model_name} | Judge: {self.attacker_model_name}", "cyan"))
         print("-" * 50)
