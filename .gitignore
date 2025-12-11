@@ -8,3 +8,24 @@ wheels/
 
 # Virtual environments
 .venv
+venv/
+ENV/
+env/
+
+# DeepTeam / DeepEval
+.deepeval/
+results/
+deepteam_repo/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
